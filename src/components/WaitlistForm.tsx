@@ -79,85 +79,21 @@ export const WaitlistForm: React.FC<WaitlistFormProps> = ({ isOpen, onClose }) =
         // Try JSON first
         response = await fetch(scriptUrl, {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            name: formData.name.trim(),
-            email: formData.email.trim(),
-            phone: formData.phone.trim(),
-            timestamp: new Date().toISOString()
-          }),
-          signal: controller.signal
-        });
-        
-        console.log('JSON request successful');
-      } catch (jsonError) {
-        console.log('JSON request failed, trying FormData:', jsonError);
-        
-        // Fallback to FormData with no-cors
+        console.log('Submitting to:', scriptUrl);
+        console.log('Data:', formData);
+
+        // Use FormData approach which works better with Google Apps Script
         const formDataToSend = new FormData();
         formDataToSend.append('name', formData.name.trim());
         formDataToSend.append('email', formData.email.trim());
         formDataToSend.append('phone', formData.phone.trim());
         formDataToSend.append('timestamp', new Date().toISOString());
-        
-        response = await fetch(scriptUrl, {
+
+        const response = await fetch(scriptUrl, {
           method: 'POST',
-          mode: 'no-cors',
           body: formDataToSend,
-          signal: controller.signal
         });
-        
-        console.log('FormData request completed');
-      }
-      
-      clearTimeout(timeoutId);
-
-      console.log('Request completed successfully');
-      setIsSubmitted(true);
-      
-      // Reset form after successful submission
-      setTimeout(() => {
-        setFormData({ name: '', email: '', phone: '' });
-        setIsSubmitted(false);
-        onClose();
-      }, 2000);
-
-    } catch (error) {
-      console.error('Error submitting form:', error);
-      
-      // Handle different types of errors
-      let errorMessage = 'Failed to submit form';
-      let suggestions = [];
-      
-      if (error instanceof Error) {
-        if (error.name === 'AbortError') {
-          errorMessage = 'Request timed out';
-          suggestions = [
-            'Your network may be slow or blocking the request',
-            'Try again in a few moments',
-            'If you\'re on a corporate network, it may be blocking Google Apps Script'
-          ];
-        } else if (error.message.includes('Failed to fetch')) {
-          errorMessage = 'Network request blocked or failed';
-          suggestions = [
-            'Your network may be blocking Google Apps Script',
-            'Try from a different network (mobile hotspot, home WiFi)',
-            'Contact your IT department if on a corporate network'
-          ];
-        } else {
-          errorMessage = error.message;
-          suggestions = [
-            'Check your internet connection',
-            'Try again in a few moments'
-          ];
-        }
-      }
-      
-      // Show user-friendly error message
-      const suggestionText = suggestions.length > 0 ? '\n\nSuggestions:\n• ' + suggestions.join('\n• ') : '';
-      alert(`${errorMessage}${suggestionText}\n\nNote: Even if this error appears, your data might still be saved. Please check the Google Sheet to confirm.`);
+      alert(`Error: ${error.message}\n\nNote: The data might still be saved. Please check the Google Sheet to confirm.`);
     } finally {
       setIsSubmitting(false);
     }
@@ -228,7 +164,19 @@ export const WaitlistForm: React.FC<WaitlistFormProps> = ({ isOpen, onClose }) =
             } ${isSubmitting ? 'opacity-50 cursor-not-allowed' : ''}`}
           >
             <X className="w-5 h-5" />
-          </button>
+        console.log('Response status:', response.status);
+        console.log('Response ok:', response.ok);
+        
+        // Try to read response text
+        let responseText = '';
+        try {
+          responseText = await response.text();
+          console.log('Response text:', responseText);
+        } catch (e) {
+          console.log('Could not read response text:', e);
+        }
+
+        console.log('Form submitted successfully');
         </div>
         
         {/* Content */}
