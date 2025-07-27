@@ -18,32 +18,57 @@ Google Apps Script Code:
 export const GOOGLE_APPS_SCRIPT_CODE = `
 function doPost(e) {
   try {
+    console.log('doPost function called');
+    console.log('Request type:', e.postData ? e.postData.type : 'No postData');
+    console.log('Full request object:', JSON.stringify(e, null, 2));
+    
     // Your Google Sheet ID
     const SPREADSHEET_ID = '1bk4xsTI5c9IDJzk3aGkwasFZ8dQB5LTBSJJ9ViypN9Y';
+    console.log('Using spreadsheet ID:', SPREADSHEET_ID);
+    
     const spreadsheet = SpreadsheetApp.openById(SPREADSHEET_ID);
     const sheet = spreadsheet.getSheetByName('Sheet1') || spreadsheet.getActiveSheet();
+    console.log('Sheet accessed successfully');
     
     // Parse the request data - handle both FormData and JSON
     let data;
-    if (e.postData.type === 'application/x-www-form-urlencoded') {
+    if (e.postData && e.postData.type === 'application/x-www-form-urlencoded') {
       // Handle FormData
+      console.log('Processing FormData');
       const params = e.parameter;
       data = {
         name: params.name,
         email: params.email,
         phone: params.phone
       };
-    } else {
+    } else if (e.postData && e.postData.contents) {
       // Handle JSON
+      console.log('Processing JSON data');
       data = JSON.parse(e.postData.contents);
+    } else {
+      // Handle URL parameters as fallback
+      console.log('Processing URL parameters');
+      data = {
+        name: e.parameter.name,
+        email: e.parameter.email,
+        phone: e.parameter.phone
+      };
     }
     
     // Log the received data for debugging
-    console.log('Received data:', data);
+    console.log('Parsed data:', JSON.stringify(data, null, 2));
+    
+    // Validate data
+    if (!data.name || !data.email || !data.phone) {
+      throw new Error('Missing required fields: ' + JSON.stringify(data));
+    }
     
     // Check if headers exist, if not add them
     const lastRow = sheet.getLastRow();
+    console.log('Current last row:', lastRow);
+    
     if (lastRow === 0) {
+      console.log('Adding headers to sheet');
       sheet.appendRow(['Name', 'Email_Id', 'Phone_Number', 'Timestamp']);
     }
     
@@ -55,7 +80,7 @@ function doPost(e) {
       new Date()
     ];
     
-    console.log('Adding row:', newRow);
+    console.log('Adding row:', JSON.stringify(newRow, null, 2));
     sheet.appendRow(newRow);
     
     console.log('Data successfully added to sheet');
@@ -69,13 +94,15 @@ function doPost(e) {
       .setMimeType(ContentService.MimeType.JSON);
       
   } catch (error) {
-    console.error('Script error:', error);
-    console.error('Error:', error);
+    console.error('Script error:', error.toString());
+    console.error('Error stack:', error.stack);
+    
     // Return error response
     return ContentService
       .createTextOutput(JSON.stringify({
         status: 'error',
-        message: error.toString()
+        message: error.toString(),
+        stack: error.stack
       }))
       .setMimeType(ContentService.MimeType.JSON);
   }
@@ -84,12 +111,17 @@ function doPost(e) {
 function doGet(e) {
   // Test function to verify the script is working
   try {
+    console.log('doGet function called');
     const SPREADSHEET_ID = '1bk4xsTI5c9IDJzk3aGkwasFZ8dQB5LTBSJJ9ViypN9Y';
     const spreadsheet = SpreadsheetApp.openById(SPREADSHEET_ID);
+    const sheet = spreadsheet.getSheetByName('Sheet1') || spreadsheet.getActiveSheet();
+    console.log('Sheet access test successful');
+    
     return ContentService
       .createTextOutput('STORYO Waitlist API is running. Sheet access: OK')
       .setMimeType(ContentService.MimeType.TEXT);
   } catch (error) {
+    console.error('doGet error:', error.toString());
     return ContentService
       .createTextOutput('STORYO Waitlist API Error: ' + error.toString())
       .setMimeType(ContentService.MimeType.TEXT);

@@ -66,27 +66,55 @@ export const WaitlistForm: React.FC<WaitlistFormProps> = ({ isOpen, onClose }) =
       // Google Apps Script Web App URL
       const scriptUrl = 'https://script.google.com/macros/s/AKfycbyGoLj--2VeR2zHRuzxVKNYcg398Mf56QdTqepztNEfY9YtXOeQq0VUGSbMfsvkCqKw-Q/exec';
       
-      // Use FormData for better compatibility with Google Apps Script
-      const formDataToSend = new FormData();
-      formDataToSend.append('name', formData.name.trim());
-      formDataToSend.append('email', formData.email.trim());
-      formDataToSend.append('phone', formData.phone.trim());
-      formDataToSend.append('timestamp', new Date().toISOString());
+      // Try multiple approaches for better compatibility
+      console.log('Attempting to submit to:', scriptUrl);
+      console.log('Form data:', formData);
 
-      // Try to submit to Google Apps Script
+      // First try with JSON (more reliable)
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
       
-      const response = await fetch(scriptUrl, {
-        method: 'POST',
-        mode: 'no-cors', // This helps with CORS issues
-        body: formDataToSend,
-        signal: controller.signal
-      });
+      let response;
+      try {
+        // Try JSON first
+        response = await fetch(scriptUrl, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            name: formData.name.trim(),
+            email: formData.email.trim(),
+            phone: formData.phone.trim(),
+            timestamp: new Date().toISOString()
+          }),
+          signal: controller.signal
+        });
+        
+        console.log('JSON request successful');
+      } catch (jsonError) {
+        console.log('JSON request failed, trying FormData:', jsonError);
+        
+        // Fallback to FormData with no-cors
+        const formDataToSend = new FormData();
+        formDataToSend.append('name', formData.name.trim());
+        formDataToSend.append('email', formData.email.trim());
+        formDataToSend.append('phone', formData.phone.trim());
+        formDataToSend.append('timestamp', new Date().toISOString());
+        
+        response = await fetch(scriptUrl, {
+          method: 'POST',
+          mode: 'no-cors',
+          body: formDataToSend,
+          signal: controller.signal
+        });
+        
+        console.log('FormData request completed');
+      }
       
       clearTimeout(timeoutId);
 
-      // With no-cors mode, we can't read the response, so we assume success if no error was thrown
+      console.log('Request completed successfully');
       setIsSubmitted(true);
       
       // Reset form after successful submission
