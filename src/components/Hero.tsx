@@ -2,10 +2,12 @@ import React from 'react';
 import { Star, Sparkles, Heart } from 'lucide-react';
 import { useTheme } from '../contexts/ThemeContext';
 import { Modal } from './Modal';
+import { WaitlistForm } from './WaitlistForm';
 
 export const Hero: React.FC = () => {
   const { isDarkMode } = useTheme();
   const [showActionModal, setShowActionModal] = React.useState(false);
+  const [showWaitlistModal, setShowWaitlistModal] = React.useState(false);
 
   const openActionModal = () => {
     setShowActionModal(true);
@@ -13,6 +15,14 @@ export const Hero: React.FC = () => {
 
   const closeActionModal = () => {
     setShowActionModal(false);
+  };
+
+  const openWaitlistModal = () => {
+    setShowWaitlistModal(true);
+  };
+
+  const closeWaitlistModal = () => {
+    setShowWaitlistModal(false);
   };
 
   return (
@@ -62,27 +72,22 @@ export const Hero: React.FC = () => {
 
             <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center lg:justify-start mb-6 sm:mb-8 px-4 sm:px-0">
               <button 
-                onClick={openActionModal}
+                onClick={openWaitlistModal}
                 className={`text-white px-6 sm:px-8 py-3 sm:py-4 rounded-full text-base sm:text-lg font-semibold transition-all transform hover:scale-105 shadow-lg ${
                 isDarkMode 
                   ? 'bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700' 
                   : 'bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600'
               }`}>
-                Let the Magic Begin
+                Join Waitlist
               </button>
               <button 
-                onClick={() => {
-                  const element = document.getElementById('how-it-works');
-                  if (element) {
-                    element.scrollIntoView({ behavior: 'smooth' });
-                  }
-                }}
+                onClick={openWaitlistModal}
                 className={`border-2 px-6 sm:px-8 py-3 sm:py-4 rounded-full text-base sm:text-lg font-semibold transition-all hover:scale-105 cursor-pointer ${
                 isDarkMode 
                   ? 'border-purple-400 text-purple-400 hover:bg-purple-900/30' 
                   : 'border-purple-300 text-purple-600 hover:bg-purple-50'
               }`}>
-                See How It Works
+                Join Waitlist
               </button>
             </div>
 
