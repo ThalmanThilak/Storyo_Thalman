@@ -73,14 +73,20 @@ export const WaitlistForm: React.FC<WaitlistFormProps> = ({ isOpen, onClose }) =
       formDataToSend.append('phone', formData.phone.trim());
       formDataToSend.append('timestamp', new Date().toISOString());
 
+      // Try to submit to Google Apps Script
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+      
       const response = await fetch(scriptUrl, {
         method: 'POST',
         mode: 'no-cors', // This helps with CORS issues
-        body: formDataToSend
+        body: formDataToSend,
+        signal: controller.signal
       });
+      
+      clearTimeout(timeoutId);
 
-      // With no-cors mode, we can't read the response, so we assume success
-      // if no error was thrown
+      // With no-cors mode, we can't read the response, so we assume success if no error was thrown
       setIsSubmitted(true);
       
       // Reset form after successful submission
@@ -92,9 +98,38 @@ export const WaitlistForm: React.FC<WaitlistFormProps> = ({ isOpen, onClose }) =
 
     } catch (error) {
       console.error('Error submitting form:', error);
-      // Show more detailed error information
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
-      alert(`Failed to submit form: ${errorMessage}\n\nPlease check:\n1. Your internet connection\n2. That the Google Apps Script is properly deployed\n3. Try again in a few moments`);
+      
+      // Handle different types of errors
+      let errorMessage = 'Failed to submit form';
+      let suggestions = [];
+      
+      if (error instanceof Error) {
+        if (error.name === 'AbortError') {
+          errorMessage = 'Request timed out';
+          suggestions = [
+            'Your network may be slow or blocking the request',
+            'Try again in a few moments',
+            'If you\'re on a corporate network, it may be blocking Google Apps Script'
+          ];
+        } else if (error.message.includes('Failed to fetch')) {
+          errorMessage = 'Network request blocked or failed';
+          suggestions = [
+            'Your network may be blocking Google Apps Script',
+            'Try from a different network (mobile hotspot, home WiFi)',
+            'Contact your IT department if on a corporate network'
+          ];
+        } else {
+          errorMessage = error.message;
+          suggestions = [
+            'Check your internet connection',
+            'Try again in a few moments'
+          ];
+        }
+      }
+      
+      // Show user-friendly error message
+      const suggestionText = suggestions.length > 0 ? '\n\nSuggestions:\n• ' + suggestions.join('\n• ') : '';
+      alert(`${errorMessage}${suggestionText}\n\nNote: Even if this error appears, your data might still be saved. Please check the Google Sheet to confirm.`);
     } finally {
       setIsSubmitting(false);
     }
