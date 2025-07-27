@@ -66,24 +66,22 @@ export const WaitlistForm: React.FC<WaitlistFormProps> = ({ isOpen, onClose }) =
       // Google Apps Script Web App URL
       const scriptUrl = 'https://script.google.com/macros/s/AKfycbwe0TEKGxDdRU-GD88PuCmaOqe1azmlIjBBgqq4TXe2Ce0NtX_dBzNGNHbJZBtodp4Q1g/exec';
       
+      // Use FormData for better compatibility with Google Apps Script
+      const formDataToSend = new FormData();
+      formDataToSend.append('name', formData.name.trim());
+      formDataToSend.append('email', formData.email.trim());
+      formDataToSend.append('phone', formData.phone.trim());
+      formDataToSend.append('timestamp', new Date().toISOString());
+
       const response = await fetch(scriptUrl, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          name: formData.name.trim(),
-          email: formData.email.trim(),
-          phone: formData.phone.trim(),
-          timestamp: new Date().toISOString()
-        })
+        mode: 'no-cors', // This helps with CORS issues
+        body: formDataToSend
       });
 
-      if (response.ok) {
-        setIsSubmitted(true);
-      } else {
-        throw new Error('Failed to submit form');
-      }
+      // With no-cors mode, we can't read the response, so we assume success
+      // if no error was thrown
+      setIsSubmitted(true);
       
       // Reset form after successful submission
       setTimeout(() => {
@@ -94,7 +92,9 @@ export const WaitlistForm: React.FC<WaitlistFormProps> = ({ isOpen, onClose }) =
 
     } catch (error) {
       console.error('Error submitting form:', error);
-      alert('Failed to submit form. Please try again.');
+      // Show more detailed error information
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
+      alert(`Failed to submit form: ${errorMessage}\n\nPlease check:\n1. Your internet connection\n2. That the Google Apps Script is properly deployed\n3. Try again in a few moments`);
     } finally {
       setIsSubmitting(false);
     }
