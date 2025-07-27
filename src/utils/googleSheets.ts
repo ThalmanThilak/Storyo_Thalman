@@ -18,8 +18,8 @@ Google Apps Script Code:
 export const GOOGLE_APPS_SCRIPT_CODE = `
 function doPost(e) {
   try {
-    // Your Google Sheet ID - MAKE SURE THIS MATCHES YOUR ACTUAL SHEET
-    const SPREADSHEET_ID = '1x-lB1TZTgWfejfcagKbqW_du3sS4tmlqXexj_EoPPgM';
+    // Your Google Sheet ID
+    const SPREADSHEET_ID = '1bk4xsTI5c9IDJzk3aGkwasFZ8dQB5LTBSJJ9ViypN9Y';
     const spreadsheet = SpreadsheetApp.openById(SPREADSHEET_ID);
     const sheet = spreadsheet.getSheetByName('Sheet1') || spreadsheet.getActiveSheet();
     
@@ -84,7 +84,7 @@ function doPost(e) {
 function doGet(e) {
   // Test function to verify the script is working
   try {
-    const SPREADSHEET_ID = '1x-lB1TZTgWfejfcagKbqW_du3sS4tmlqXexj_EoPPgM';
+    const SPREADSHEET_ID = '1bk4xsTI5c9IDJzk3aGkwasFZ8dQB5LTBSJJ9ViypN9Y';
     const spreadsheet = SpreadsheetApp.openById(SPREADSHEET_ID);
     return ContentService
       .createTextOutput('STORYO Waitlist API is running. Sheet access: OK')
@@ -109,7 +109,7 @@ STEP 1: Create Google Apps Script
 
 STEP 2: Deploy the Script
 1. Click "Deploy" > "New deployment"
-2. Click the gear icon next to "Type\" and select "Web app"
+2. Click the gear icon next to "Type\" and select \"Web app"
 3. Set the following:
    - Description: "STORYO Waitlist Form"
    - Execute as: "Me"
@@ -119,7 +119,7 @@ STEP 2: Deploy the Script
 6. Replace the scriptUrl in WaitlistForm.tsx with this URL
 
 STEP 3: Set up Google Sheet
-1. Open your Google Sheet: https://docs.google.com/spreadsheets/d/1x-lB1TZTgWfejfcagKbqW_du3sS4tmlqXexj_EoPPgM/edit
+1. Open your Google Sheet: https://docs.google.com/spreadsheets/d/1bk4xsTI5c9IDJzk3aGkwasFZ8dQB5LTBSJJ9ViypN9Y/edit
 2. Make sure you have a sheet named "Sheet1" (or it will use the active sheet)
 3. The script will automatically add headers: Name, Email_Id, Phone_Number, Timestamp
 4. Make sure the sheet is accessible (not restricted)
