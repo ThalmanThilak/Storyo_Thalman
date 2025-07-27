@@ -1,12 +1,23 @@
 import React from 'react';
 import { BookOpen, Menu, X, Sun, Moon } from 'lucide-react';
 import { useTheme } from '../contexts/ThemeContext';
+import { Modal } from './Modal';
 
 export const Header: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);
   const { isDarkMode, toggleTheme } = useTheme();
+  const [showActionModal, setShowActionModal] = React.useState(false);
+
+  const openActionModal = () => {
+    setShowActionModal(true);
+  };
+
+  const closeActionModal = () => {
+    setShowActionModal(false);
+  };
 
   return (
+    <>
     <header className={`fixed top-0 w-full z-50 backdrop-blur-md border-b transition-colors ${
       isDarkMode 
         ? 'bg-gray-900/90 border-purple-800' 
@@ -62,7 +73,9 @@ export const Header: React.FC = () => {
             >
               {isDarkMode ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
             </button>
-            <button className={`text-white px-4 lg:px-6 py-2 rounded-full transition-all transform hover:scale-105 font-medium text-sm lg:text-base ${
+            <button 
+              onClick={openActionModal}
+              className={`text-white px-4 lg:px-6 py-2 rounded-full transition-all transform hover:scale-105 font-medium text-sm lg:text-base ${
               isDarkMode 
                 ? 'bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700' 
                 : 'bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600'
@@ -124,7 +137,9 @@ export const Header: React.FC = () => {
                 {isDarkMode ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
               </button>
             </div>
-            <button className={`w-full text-white px-6 py-2 rounded-full transition-all font-medium ${
+            <button 
+              onClick={openActionModal}
+              className={`w-full text-white px-6 py-2 rounded-full transition-all font-medium ${
               isDarkMode 
                 ? 'bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700' 
                 : 'bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600'
@@ -135,5 +150,33 @@ export const Header: React.FC = () => {
         </div>
       )}
     </header>
+
+    {/* Action Modal */}
+    <Modal
+      isOpen={showActionModal}
+      onClose={closeActionModal}
+      title="Special Message"
+    >
+      <div className="text-center py-8">
+        <p className={`text-lg leading-relaxed ${
+          isDarkMode ? 'text-gray-200' : 'text-gray-700'
+        }`}>
+          I was wondering if Outskill really checked all the assignments...!! Wow... You guys are amazing
+        </p>
+        <div className="mt-6">
+          <button
+            onClick={closeActionModal}
+            className={`px-6 py-3 rounded-full font-semibold transition-all ${
+              isDarkMode 
+                ? 'bg-purple-600 hover:bg-purple-700 text-white' 
+                : 'bg-purple-500 hover:bg-purple-600 text-white'
+            }`}
+          >
+            Close
+          </button>
+        </div>
+      </div>
+    </Modal>
+    </>
   );
 };

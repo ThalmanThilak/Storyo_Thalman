@@ -1,11 +1,22 @@
 import React from 'react';
 import { Star, Sparkles, Heart } from 'lucide-react';
 import { useTheme } from '../contexts/ThemeContext';
+import { Modal } from './Modal';
 
 export const Hero: React.FC = () => {
   const { isDarkMode } = useTheme();
+  const [showActionModal, setShowActionModal] = React.useState(false);
+
+  const openActionModal = () => {
+    setShowActionModal(true);
+  };
+
+  const closeActionModal = () => {
+    setShowActionModal(false);
+  };
 
   return (
+    <>
     <section className={`relative min-h-screen flex items-center overflow-hidden transition-colors ${
       isDarkMode 
         ? 'bg-gradient-to-br from-gray-900 via-purple-900 to-indigo-900' 
@@ -50,7 +61,9 @@ export const Hero: React.FC = () => {
             </p>
 
             <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center lg:justify-start mb-6 sm:mb-8 px-4 sm:px-0">
-              <button className={`text-white px-6 sm:px-8 py-3 sm:py-4 rounded-full text-base sm:text-lg font-semibold transition-all transform hover:scale-105 shadow-lg ${
+              <button 
+                onClick={openActionModal}
+                className={`text-white px-6 sm:px-8 py-3 sm:py-4 rounded-full text-base sm:text-lg font-semibold transition-all transform hover:scale-105 shadow-lg ${
                 isDarkMode 
                   ? 'bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700' 
                   : 'bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600'
@@ -168,5 +181,33 @@ export const Hero: React.FC = () => {
         </div>
       </div>
     </section>
+
+    {/* Action Modal */}
+    <Modal
+      isOpen={showActionModal}
+      onClose={closeActionModal}
+      title="Special Message"
+    >
+      <div className="text-center py-8">
+        <p className={`text-lg leading-relaxed ${
+          isDarkMode ? 'text-gray-200' : 'text-gray-700'
+        }`}>
+          I was wondering if Outskill really checked all the assignments...!! Wow... You guys are amazing
+        </p>
+        <div className="mt-6">
+          <button
+            onClick={closeActionModal}
+            className={`px-6 py-3 rounded-full font-semibold transition-all ${
+              isDarkMode 
+                ? 'bg-purple-600 hover:bg-purple-700 text-white' 
+                : 'bg-purple-500 hover:bg-purple-600 text-white'
+            }`}
+          >
+            Close
+          </button>
+        </div>
+      </div>
+    </Modal>
+    </>
   );
 };
