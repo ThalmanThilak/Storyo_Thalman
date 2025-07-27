@@ -229,7 +229,7 @@ export const Footer: React.FC = () => {
               <div className="space-y-2 sm:space-y-3">
                 <div className="flex items-center space-x-3">
                   <Mail className={`w-4 h-4 sm:w-5 sm:h-5 ${isDarkMode ? 'text-purple-300' : 'text-purple-400'}`} />
-                  <span className={`text-sm sm:text-base ${isDarkMode ? 'text-gray-300' : 'text-gray-400'}`}>hello@storyo.app</span>
+                  <span className={`text-sm sm:text-base ${isDarkMode ? 'text-gray-300' : 'text-gray-400'}`}>thilak.giri@gmail.com</span>
                 </div>
                 <div className="flex items-center space-x-3">
                   <Phone className={`w-4 h-4 sm:w-5 sm:h-5 ${isDarkMode ? 'text-purple-300' : 'text-purple-400'}`} />
