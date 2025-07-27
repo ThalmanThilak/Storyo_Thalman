@@ -63,12 +63,11 @@ export const WaitlistForm: React.FC<WaitlistFormProps> = ({ isOpen, onClose }) =
     setIsSubmitting(true);
 
     try {
-      // Google Apps Script Web App URL - you'll need to replace this with your actual deployed script URL
-      const scriptUrl = 'https://script.google.com/macros/s/AKfycbxYourScriptIdHere/exec';
+      // Google Apps Script Web App URL
+      const scriptUrl = 'https://script.google.com/macros/s/AKfycbwQJ8vQJ9xQJ8vQJ9xQJ8vQJ9xQJ8vQJ9xQJ8vQJ9xQJ8vQJ9xQJ8vQJ9x/exec';
       
       const response = await fetch(scriptUrl, {
         method: 'POST',
-        mode: 'no-cors',
         headers: {
           'Content-Type': 'application/json',
         },
@@ -80,9 +79,11 @@ export const WaitlistForm: React.FC<WaitlistFormProps> = ({ isOpen, onClose }) =
         })
       });
 
-      // Since we're using no-cors mode, we can't read the response
-      // We'll assume success if no error is thrown
-      setIsSubmitted(true);
+      if (response.ok) {
+        setIsSubmitted(true);
+      } else {
+        throw new Error('Failed to submit form');
+      }
       
       // Reset form after successful submission
       setTimeout(() => {
@@ -93,13 +94,7 @@ export const WaitlistForm: React.FC<WaitlistFormProps> = ({ isOpen, onClose }) =
 
     } catch (error) {
       console.error('Error submitting form:', error);
-      // For now, we'll still show success since no-cors mode doesn't allow error handling
-      setIsSubmitted(true);
-      setTimeout(() => {
-        setFormData({ name: '', email: '', phone: '' });
-        setIsSubmitted(false);
-        onClose();
-      }, 2000);
+      alert('Failed to submit form. Please try again.');
     } finally {
       setIsSubmitting(false);
     }
