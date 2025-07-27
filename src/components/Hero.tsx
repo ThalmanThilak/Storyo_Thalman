@@ -215,6 +215,12 @@ export const Hero: React.FC = () => {
         </div>
       </div>
     </Modal>
+
+    {/* Waitlist Modal */}
+    <WaitlistForm
+      isOpen={showWaitlistModal}
+      onClose={closeWaitlistModal}
+    />
     </>
   );
 };
