@@ -18,13 +18,28 @@ Google Apps Script Code:
 export const GOOGLE_APPS_SCRIPT_CODE = `
 function doPost(e) {
   try {
-    // Your Google Sheet ID
+    // Your Google Sheet ID - MAKE SURE THIS MATCHES YOUR ACTUAL SHEET
     const SPREADSHEET_ID = '1x-lB1TZTgWfejfcagKbqW_du3sS4tmlqXexj_EoPPgM';
     const spreadsheet = SpreadsheetApp.openById(SPREADSHEET_ID);
     const sheet = spreadsheet.getSheetByName('Sheet1') || spreadsheet.getActiveSheet();
     
-    // Parse the request data
-    const data = JSON.parse(e.postData.contents);
+    // Parse the request data - handle both FormData and JSON
+    let data;
+    if (e.postData.type === 'application/x-www-form-urlencoded') {
+      // Handle FormData
+      const params = e.parameter;
+      data = {
+        name: params.name,
+        email: params.email,
+        phone: params.phone
+      };
+    } else {
+      // Handle JSON
+      data = JSON.parse(e.postData.contents);
+    }
+    
+    // Log the received data for debugging
+    console.log('Received data:', data);
     
     // Check if headers exist, if not add them
     const lastRow = sheet.getLastRow();
@@ -33,12 +48,17 @@ function doPost(e) {
     }
     
     // Append the data to the sheet
-    sheet.appendRow([
+    const newRow = [
       data.name,
       data.email,
       data.phone,
       new Date()
-    ]);
+    ];
+    
+    console.log('Adding row:', newRow);
+    sheet.appendRow(newRow);
+    
+    console.log('Data successfully added to sheet');
     
     // Return success response
     return ContentService
@@ -49,6 +69,7 @@ function doPost(e) {
       .setMimeType(ContentService.MimeType.JSON);
       
   } catch (error) {
+    console.error('Script error:', error);
     console.error('Error:', error);
     // Return error response
     return ContentService
@@ -60,11 +81,21 @@ function doPost(e) {
   }
 }
 
-function doGet() {
-  return ContentService
-    .createTextOutput('STORYO Waitlist API is running')
-    .setMimeType(ContentService.MimeType.TEXT);
-}`;
+function doGet(e) {
+  // Test function to verify the script is working
+  try {
+    const SPREADSHEET_ID = '1x-lB1TZTgWfejfcagKbqW_du3sS4tmlqXexj_EoPPgM';
+    const spreadsheet = SpreadsheetApp.openById(SPREADSHEET_ID);
+    return ContentService
+      .createTextOutput('STORYO Waitlist API is running. Sheet access: OK')
+      .setMimeType(ContentService.MimeType.TEXT);
+  } catch (error) {
+    return ContentService
+      .createTextOutput('STORYO Waitlist API Error: ' + error.toString())
+      .setMimeType(ContentService.MimeType.TEXT);
+  }
+}
+
 
 // Instructions for setting up the Google Sheet headers
 export const SETUP_INSTRUCTIONS = `
@@ -78,13 +109,13 @@ STEP 1: Create Google Apps Script
 
 STEP 2: Deploy the Script
 1. Click "Deploy" > "New deployment"
-2. Click the gear icon next to "Type" and select "Web app"
+2. Click the gear icon next to "Type\" and select "Web app"
 3. Set the following:
    - Description: "STORYO Waitlist Form"
    - Execute as: "Me"
    - Who has access to the app: "Anyone"
 4. Click "Deploy"
-5. Copy the "Web app URL" that appears
+5. Copy the "Web app URL\" that appears
 6. Replace the scriptUrl in WaitlistForm.tsx with this URL
 
 STEP 3: Set up Google Sheet
@@ -99,7 +130,7 @@ STEP 4: Test the Integration
 3. If there are issues, check the Apps Script logs: https://script.google.com/ > Your project > Executions
 
 IMPORTANT NOTES:
-- The Google Apps Script must be deployed with "Anyone" access
+- The Google Apps Script must be deployed with "Anyone\" access
 - The Google Sheet must be accessible to the script
 - You may need to authorize the script the first time it runs
 - Check the Apps Script execution logs if data isn't appearing
@@ -120,7 +151,7 @@ If data is not appearing in your Google Sheet:
 2. CHECK SCRIPT PERMISSIONS:
    - Run the script manually once in the Apps Script editor
    - Authorize all required permissions
-   - Check "Executions" tab for any errors
+   - Check "Executions\" tab for any errors
 
 3. CHECK GOOGLE SHEET:
    - Ensure the sheet ID in the script matches your sheet
