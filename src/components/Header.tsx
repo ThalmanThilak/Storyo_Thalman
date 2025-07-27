@@ -25,7 +25,10 @@ export const Header: React.FC = () => {
     }`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
-          <div className="flex items-center space-x-2">
+          <button 
+            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+            className="flex items-center space-x-2 cursor-pointer hover:opacity-80 transition-opacity"
+          >
             <div className={`w-7 h-7 sm:w-8 sm:h-8 rounded-lg flex items-center justify-center ${
               isDarkMode 
                 ? 'bg-gradient-to-br from-purple-500 to-pink-500' 
@@ -40,7 +43,7 @@ export const Header: React.FC = () => {
             }`}>
               STORYO
             </span>
-          </div>
+          </button>
           
           <nav className="hidden md:flex items-center space-x-8">
             <a href="#features" className={`hover:text-purple-500 transition-colors font-medium ${

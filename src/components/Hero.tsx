@@ -77,7 +77,7 @@ export const Hero: React.FC = () => {
                     element.scrollIntoView({ behavior: 'smooth' });
                   }
                 }}
-                className={`border-2 px-6 sm:px-8 py-3 sm:py-4 rounded-full text-base sm:text-lg font-semibold transition-all cursor-pointer ${
+                className={`border-2 px-6 sm:px-8 py-3 sm:py-4 rounded-full text-base sm:text-lg font-semibold transition-all hover:scale-105 cursor-pointer ${
                 isDarkMode 
                   ? 'border-purple-400 text-purple-400 hover:bg-purple-900/30' 
                   : 'border-purple-300 text-purple-600 hover:bg-purple-50'
