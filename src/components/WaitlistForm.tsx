@@ -63,65 +63,31 @@ export const WaitlistForm: React.FC<WaitlistFormProps> = ({ isOpen, onClose }) =
     setIsSubmitting(true);
 
     try {
-      const scriptUrl = 'YOUR_GOOGLE_APPS_SCRIPT_URL_HERE';
+      const scriptUrl = 'https://script.google.com/macros/s/AKfycbyGoLj--2VeR2zHRuzxVKNYcg398Mf56QdTqepztNEfY9YtXOeQq0VUGSbMfsvkCqKw-Q/exec';
       
       if (!scriptUrl || scriptUrl === 'YOUR_GOOGLE_APPS_SCRIPT_URL_HERE') {
         throw new Error('Google Apps Script URL not configured');
       }
 
-      try {
-        console.log('Submitting to:', scriptUrl);
-        console.log('Data:', formData);
+      console.log('Submitting to:', scriptUrl);
+      console.log('Data:', formData);
 
-        const formDataToSend = new FormData();
-        formDataToSend.append('name', formData.name.trim());
-        formDataToSend.append('email', formData.email.trim());
-        formDataToSend.append('phone', formData.phone.trim());
-        formDataToSend.append('timestamp', new Date().toISOString());
+      const formDataToSend = new FormData();
+      formDataToSend.append('name', formData.name.trim());
+      formDataToSend.append('email', formData.email.trim());
+      formDataToSend.append('phone', formData.phone.trim());
+      formDataToSend.append('timestamp', new Date().toISOString());
 
-        // Set a shorter timeout for corporate networks
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 second timeout
+      const response = await fetch(scriptUrl, {
+        method: 'POST',
+        body: formDataToSend
+      });
 
-        try {
-          const response = await fetch(scriptUrl, {
-            method: 'POST',
-            body: formDataToSend,
-            signal: controller.signal,
-            mode: 'no-cors' // This helps with corporate firewalls
-          });
-          
-          clearTimeout(timeoutId);
-          console.log('Form submitted successfully');
-          setIsSubmitted(true);
-        } catch (error: any) {
-          clearTimeout(timeoutId);
-          console.error('Submission error:', error);
-          
-          // For corporate networks that block the response but allow the request
-          if (error.message.includes('Failed to fetch') || 
-              error.message.includes('NetworkError') ||
-              error.name === 'AbortError') {
-            console.log('Corporate network detected - assuming successful submission');
-            // Show success since corporate networks often block responses but allow requests
-            setIsSubmitted(true);
-          } else {
-            // Show error for other types of failures
-            alert(`Submission failed: ${error.message}\n\nPlease verify:\n1. Google Apps Script is deployed correctly\n2. Web App URL is correct\n3. Script has proper permissions`);
-          }
-        }
-
-        console.log('Form submitted successfully');
-        setIsSubmitted(true);
-      } catch (error: any) {
-        console.error('Submission error:', error);
-        
-        // Show error for failures
-        alert(`Submission failed: ${error.message}\n\nPlease verify:\n1. Google Apps Script is deployed correctly\n2. Web App URL is correct\n3. Script has proper permissions`);
-      }
+      console.log('Form submitted successfully');
+      setIsSubmitted(true);
     } catch (error: any) {
       console.error('Submission error:', error);
-      alert(`Submission failed: ${error.message}\n\nPlease verify your Google Apps Script deployment.`);
+      alert(`Submission failed: ${error.message}\n\nPlease verify:\n1. Google Apps Script is deployed correctly\n2. Web App URL is correct\n3. Script has proper permissions`);
     } finally {
       setIsSubmitting(false);
     }
