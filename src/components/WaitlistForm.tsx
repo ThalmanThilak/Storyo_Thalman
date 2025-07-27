@@ -77,8 +77,6 @@ export const WaitlistForm: React.FC<WaitlistFormProps> = ({ isOpen, onClose }) =
       let response;
       try {
         // Try JSON first
-        response = await fetch(scriptUrl, {
-          method: 'POST',
         console.log('Submitting to:', scriptUrl);
         console.log('Data:', formData);
 
@@ -89,10 +87,31 @@ export const WaitlistForm: React.FC<WaitlistFormProps> = ({ isOpen, onClose }) =
         formDataToSend.append('phone', formData.phone.trim());
         formDataToSend.append('timestamp', new Date().toISOString());
 
-        const response = await fetch(scriptUrl, {
+        response = await fetch(scriptUrl, {
           method: 'POST',
           body: formDataToSend,
         });
+        
+        console.log('Response status:', response.status);
+        console.log('Response ok:', response.ok);
+        
+        // Try to read response text
+        let responseText = '';
+        try {
+          responseText = await response.text();
+          console.log('Response text:', responseText);
+        } catch (e) {
+          console.log('Could not read response text:', e);
+        }
+
+        console.log('Form submitted successfully');
+        setIsSubmitted(true);
+      } catch (error: any) {
+        console.error('Submission error:', error);
+        alert(`Error: ${error.message}\n\nNote: The data might still be saved. Please check the Google Sheet to confirm.`);
+      }
+    } catch (error: any) {
+      console.error('Submission error:', error);
       alert(`Error: ${error.message}\n\nNote: The data might still be saved. Please check the Google Sheet to confirm.`);
     } finally {
       setIsSubmitting(false);
@@ -164,19 +183,7 @@ export const WaitlistForm: React.FC<WaitlistFormProps> = ({ isOpen, onClose }) =
             } ${isSubmitting ? 'opacity-50 cursor-not-allowed' : ''}`}
           >
             <X className="w-5 h-5" />
-        console.log('Response status:', response.status);
-        console.log('Response ok:', response.ok);
-        
-        // Try to read response text
-        let responseText = '';
-        try {
-          responseText = await response.text();
-          console.log('Response text:', responseText);
-        } catch (e) {
-          console.log('Could not read response text:', e);
-        }
-
-        console.log('Form submitted successfully');
+          </button>
         </div>
         
         {/* Content */}
