@@ -1,5 +1,5 @@
 import React from 'react';
-import { BookOpen, Mail, Phone, MapPin } from 'lucide-react';
+import { BookOpen, Mail, Instagram } from 'lucide-react';
 import { useTheme } from '../contexts/ThemeContext';
 import { Modal } from './Modal';
 
@@ -232,12 +232,19 @@ export const Footer: React.FC = () => {
                   <span className={`text-sm sm:text-base ${isDarkMode ? 'text-gray-300' : 'text-gray-400'}`}>thilak.giri@gmail.com</span>
                 </div>
                 <div className="flex items-center space-x-3">
-                  <Phone className={`w-4 h-4 sm:w-5 sm:h-5 ${isDarkMode ? 'text-purple-300' : 'text-purple-400'}`} />
-                  <span className={`text-sm sm:text-base ${isDarkMode ? 'text-gray-300' : 'text-gray-400'}`}>1-800-STORYO-1</span>
-                </div>
-                <div className="flex items-center space-x-3">
-                  <MapPin className={`w-4 h-4 sm:w-5 sm:h-5 ${isDarkMode ? 'text-purple-300' : 'text-purple-400'}`} />
-                  <span className={`text-sm sm:text-base ${isDarkMode ? 'text-gray-300' : 'text-gray-400'}`}>San Francisco, CA</span>
+                  <Instagram className={`w-4 h-4 sm:w-5 sm:h-5 ${isDarkMode ? 'text-purple-300' : 'text-purple-400'}`} />
+                  <a 
+                    href="https://www.instagram.com/theycall.thalman/" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className={`text-sm sm:text-base transition-colors ${
+                      isDarkMode 
+                        ? 'text-gray-300 hover:text-purple-300' 
+                        : 'text-gray-400 hover:text-purple-400'
+                    }`}
+                  >
+                    @theycall.thalman
+                  </a>
                 </div>
               </div>
             </div>
