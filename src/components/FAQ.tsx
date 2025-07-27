@@ -1,8 +1,10 @@
 import React from 'react';
 import { ChevronDown, ChevronUp } from 'lucide-react';
+import { useTheme } from '../contexts/ThemeContext';
 
 export const FAQ: React.FC = () => {
   const [openIndex, setOpenIndex] = React.useState<number | null>(null);
+  const { isDarkMode } = useTheme();
 
   const faqs = [
     {
@@ -44,37 +46,67 @@ export const FAQ: React.FC = () => {
   };
 
   return (
-    <section id="faq" className="py-20 bg-gradient-to-br from-purple-50 via-pink-50 to-blue-50">
+    <section id="faq" className={`py-20 relative overflow-hidden transition-colors ${
+      isDarkMode 
+        ? 'bg-gradient-to-br from-gray-800 via-purple-900 to-indigo-900' 
+        : 'bg-gradient-to-br from-purple-50 via-pink-50 to-blue-50'
+    }`}>
+      {/* Background animations */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className={`absolute top-24 right-12 animate-pulse delay-400 ${isDarkMode ? 'opacity-50' : 'opacity-25'}`}>
+          <ChevronDown className={`w-6 h-6 ${isDarkMode ? 'text-purple-300' : 'text-purple-400'}`} />
+        </div>
+        <div className={`absolute bottom-48 left-8 animate-bounce delay-900 ${isDarkMode ? 'opacity-40' : 'opacity-20'}`}>
+          <ChevronUp className={`w-5 h-5 ${isDarkMode ? 'text-pink-300' : 'text-pink-400'}`} />
+        </div>
+      </div>
+
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12 sm:mb-16">
-          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-800 mb-3 sm:mb-4 font-serif px-4">
+          <h2 className={`text-2xl sm:text-3xl lg:text-4xl font-bold mb-3 sm:mb-4 font-serif px-4 ${
+            isDarkMode ? 'text-gray-100' : 'text-gray-800'
+          }`}>
             Frequently Asked Questions
           </h2>
-          <p className="text-lg sm:text-xl text-gray-600 px-4">
+          <p className={`text-lg sm:text-xl px-4 ${
+            isDarkMode ? 'text-gray-300' : 'text-gray-600'
+          }`}>
             Everything you need to know about STORYO and creating magical bedtime moments.
           </p>
         </div>
 
         <div className="space-y-4">
           {faqs.map((faq, index) => (
-            <div key={index} className="bg-white rounded-xl sm:rounded-2xl shadow-lg overflow-hidden">
+            <div key={index} className={`rounded-xl sm:rounded-2xl shadow-lg overflow-hidden ${
+              isDarkMode ? 'bg-gray-800' : 'bg-white'
+            }`}>
               <button
                 onClick={() => toggleFAQ(index)}
-                className="w-full px-4 sm:px-6 py-4 sm:py-6 text-left flex justify-between items-center hover:bg-purple-50 transition-colors"
+                className={`w-full px-4 sm:px-6 py-4 sm:py-6 text-left flex justify-between items-center transition-colors ${
+                  isDarkMode ? 'hover:bg-purple-900/30' : 'hover:bg-purple-50'
+                }`}
               >
-                <h3 className="text-base sm:text-lg font-semibold text-gray-800 pr-4">
+                <h3 className={`text-base sm:text-lg font-semibold pr-4 ${
+                  isDarkMode ? 'text-gray-100' : 'text-gray-800'
+                }`}>
                   {faq.question}
                 </h3>
                 {openIndex === index ? (
-                  <ChevronUp className="w-4 h-4 sm:w-5 sm:h-5 text-purple-600 flex-shrink-0" />
+                  <ChevronUp className={`w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0 ${
+                    isDarkMode ? 'text-purple-400' : 'text-purple-600'
+                  }`} />
                 ) : (
-                  <ChevronDown className="w-4 h-4 sm:w-5 sm:h-5 text-purple-600 flex-shrink-0" />
+                  <ChevronDown className={`w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0 ${
+                    isDarkMode ? 'text-purple-400' : 'text-purple-600'
+                  }`} />
                 )}
               </button>
               
               {openIndex === index && (
                 <div className="px-4 sm:px-6 pb-4 sm:pb-6">
-                  <p className="text-sm sm:text-base text-gray-600 leading-relaxed">
+                  <p className={`text-sm sm:text-base leading-relaxed ${
+                    isDarkMode ? 'text-gray-300' : 'text-gray-600'
+                  }`}>
                     {faq.answer}
                   </p>
                 </div>
@@ -84,10 +116,16 @@ export const FAQ: React.FC = () => {
         </div>
 
         <div className="text-center mt-12">
-          <p className="text-sm sm:text-base text-gray-600 mb-4 px-4">
+          <p className={`text-sm sm:text-base mb-4 px-4 ${
+            isDarkMode ? 'text-gray-300' : 'text-gray-600'
+          }`}>
             Still have questions? We'd love to help!
           </p>
-          <button className="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-6 sm:px-8 py-3 rounded-full text-sm sm:text-base font-semibold hover:from-purple-600 hover:to-pink-600 transition-all transform hover:scale-105">
+          <button className={`text-white px-6 sm:px-8 py-3 rounded-full text-sm sm:text-base font-semibold transition-all transform hover:scale-105 ${
+            isDarkMode 
+              ? 'bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700' 
+              : 'bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600'
+          }`}>
             Contact Support
           </button>
         </div>
