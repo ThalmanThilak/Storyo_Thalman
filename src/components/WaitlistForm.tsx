@@ -57,6 +57,19 @@ export const WaitlistForm: React.FC<WaitlistFormProps> = ({ isOpen, onClose }) =
     e.preventDefault();
     
     if (!validateForm()) {
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    try {
+      const scriptUrl = 'YOUR_GOOGLE_APPS_SCRIPT_URL_HERE';
+      
+      if (!scriptUrl || scriptUrl === 'YOUR_GOOGLE_APPS_SCRIPT_URL_HERE') {
+        throw new Error('Google Apps Script URL not configured');
+      }
+
+      try {
         console.log('Submitting to:', scriptUrl);
         console.log('Data:', formData);
 
