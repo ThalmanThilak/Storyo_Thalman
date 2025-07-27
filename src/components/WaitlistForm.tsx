@@ -64,7 +64,7 @@ export const WaitlistForm: React.FC<WaitlistFormProps> = ({ isOpen, onClose }) =
 
     try {
       // Google Apps Script Web App URL
-      const scriptUrl = 'https://script.google.com/macros/s/AKfycbwe0TEKGxDdRU-GD88PuCmaOqe1azmlIjBBgqq4TXe2Ce0NtX_dBzNGNHbJZBtodp4Q1g/exec';
+      const scriptUrl = 'https://script.google.com/macros/s/AKfycbwlLFj2gT7-s55cFxOlukxcy4udEX7f1D9YrEgAt5gHEfSvHjMyxXgr_pSmZGDx55M2Fw/exec';
       
       // Use FormData for better compatibility with Google Apps Script
       const formDataToSend = new FormData();
