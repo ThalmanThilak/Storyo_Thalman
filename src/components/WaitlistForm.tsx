@@ -76,11 +76,10 @@ export const WaitlistForm: React.FC<WaitlistFormProps> = ({ isOpen, onClose }) =
       
       let response;
       try {
-        // Try JSON first
+        // Use FormData approach which works better with Google Apps Script
         console.log('Submitting to:', scriptUrl);
         console.log('Data:', formData);
 
-        // Use FormData approach which works better with Google Apps Script
         const formDataToSend = new FormData();
         formDataToSend.append('name', formData.name.trim());
         formDataToSend.append('email', formData.email.trim());
@@ -90,6 +89,7 @@ export const WaitlistForm: React.FC<WaitlistFormProps> = ({ isOpen, onClose }) =
         response = await fetch(scriptUrl, {
           method: 'POST',
           body: formDataToSend,
+          signal: controller.signal
         });
         
         console.log('Response status:', response.status);
@@ -109,20 +109,12 @@ export const WaitlistForm: React.FC<WaitlistFormProps> = ({ isOpen, onClose }) =
       } catch (error: any) {
         console.error('Submission error:', error);
         
-        // Handle corporate network restrictions gracefully
-        if (error.message.includes('Failed to fetch') || error.name === 'TypeError') {
-          // This is likely a corporate firewall blocking the response
-          // But the data was probably still saved
-          console.log('Corporate network detected - showing success message');
-          setIsSubmitted(true);
-        } else {
-          // Show error for other types of failures
-          alert(`Error: ${error.message}\n\nNote: The data might still be saved. Please check the Google Sheet to confirm.`);
-        }
+        // Show error for failures
+        alert(`Submission failed: ${error.message}\n\nPlease verify:\n1. Google Apps Script is deployed correctly\n2. Web App URL is correct\n3. Script has proper permissions`);
       }
     } catch (error: any) {
       console.error('Submission error:', error);
-      alert(`Error: ${error.message}\n\nNote: The data might still be saved. Please check the Google Sheet to confirm.`);
+      alert(`Submission failed: ${error.message}\n\nPlease verify your Google Apps Script deployment.`);
     } finally {
       setIsSubmitting(false);
     }
