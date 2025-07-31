@@ -84,7 +84,11 @@ export const Hero: React.FC = () => {
 
       utterance.onerror = (event) => {
         setIsPlaying(false);
-        console.error('Speech synthesis error:', event.error);
+        if (event.error === 'interrupted') {
+          console.warn('Speech synthesis interrupted:', event.error);
+        } else {
+          console.error('Speech synthesis error:', event.error);
+        }
         // Don't show alert, just reset the state silently
       };
 
