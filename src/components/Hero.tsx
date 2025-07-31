@@ -9,7 +9,6 @@ export const Hero: React.FC = () => {
   const [showActionModal, setShowActionModal] = React.useState(false);
   const [showWaitlistModal, setShowWaitlistModal] = React.useState(false);
   const [isPlaying, setIsPlaying] = React.useState(false);
-  const [currentUtterance, setCurrentUtterance] = React.useState<SpeechSynthesisUtterance | null>(null);
 
   const openActionModal = () => {
     setShowActionModal(true);
@@ -35,11 +34,10 @@ export const Hero: React.FC = () => {
       return;
     }
 
-    if (isPlaying && currentUtterance) {
+    if (isPlaying) {
       // Stop current narration
       window.speechSynthesis.cancel();
       setIsPlaying(false);
-      setCurrentUtterance(null);
     } else {
       // Start narration
       const utterance = new SpeechSynthesisUtterance(sampleStoryText);
@@ -69,16 +67,14 @@ export const Hero: React.FC = () => {
 
       utterance.onend = () => {
         setIsPlaying(false);
-        setCurrentUtterance(null);
       };
 
       utterance.onerror = () => {
         setIsPlaying(false);
-        setCurrentUtterance(null);
-        alert('Sorry, there was an error with the narration. Please try again.');
+        console.error('Speech synthesis error');
+        // Don't show alert, just reset the state silently
       };
 
-      setCurrentUtterance(utterance);
       window.speechSynthesis.speak(utterance);
     }
   };
@@ -230,10 +226,10 @@ export const Hero: React.FC = () => {
                     className={`w-6 h-6 sm:w-8 sm:h-8 rounded-full flex items-center justify-center transition-all hover:scale-110 ${
                       isDarkMode ? 'bg-purple-500 hover:bg-purple-600' : 'bg-purple-400 hover:bg-purple-500'
                     }`}
-                    title={isPlaying ? 'Stop narration' : 'Play story narration'}
+                    title={isPlaying ? 'Stop story narration' : 'Play story narration'}
                   >
                     <span className="text-white text-xs sm:text-sm">
-                      {isPlaying ? '⏸' : '▶'}
+                      {isPlaying ? '⏹' : '▶'}
                     </span>
                   </button>
                   <div className={`flex-1 h-2 rounded-full ${isDarkMode ? 'bg-purple-800' : 'bg-purple-200'}`}>
