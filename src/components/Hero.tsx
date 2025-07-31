@@ -69,9 +69,9 @@ export const Hero: React.FC = () => {
         setIsPlaying(false);
       };
 
-      utterance.onerror = () => {
+      utterance.onerror = (event) => {
         setIsPlaying(false);
-        console.error('Speech synthesis error');
+        console.error('Speech synthesis error:', event.error);
         // Don't show alert, just reset the state silently
       };
 
