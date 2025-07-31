@@ -8,6 +8,8 @@ export const Hero: React.FC = () => {
   const { isDarkMode } = useTheme();
   const [showActionModal, setShowActionModal] = React.useState(false);
   const [showWaitlistModal, setShowWaitlistModal] = React.useState(false);
+  const [isPlaying, setIsPlaying] = React.useState(false);
+  const [currentUtterance, setCurrentUtterance] = React.useState<SpeechSynthesisUtterance | null>(null);
 
   const openActionModal = () => {
     setShowActionModal(true);
@@ -25,6 +27,81 @@ export const Hero: React.FC = () => {
     setShowWaitlistModal(false);
   };
 
+  const sampleStoryText = `Sia's Forest Adventure. Once upon a time, little Sia ventured into the enchanted forest with her trusty teddy bear. The magical trees whispered her name as she discovered a hidden path covered in sparkling fairy dust. As Sia walked deeper into the forest, she met a friendly rabbit who needed help finding his way home. With her brave heart and kind spirit, Sia helped the rabbit navigate through the mystical woods, making a new friend along the way. The forest creatures celebrated their friendship with a beautiful light show from the fireflies, and Sia knew this was just the beginning of many magical adventures to come.`;
+
+  const handlePlayPause = () => {
+    if (!('speechSynthesis' in window)) {
+      alert('Sorry, your browser doesn\'t support text-to-speech. Please try a modern browser like Chrome, Firefox, or Safari.');
+      return;
+    }
+
+    if (isPlaying && currentUtterance) {
+      // Stop current narration
+      window.speechSynthesis.cancel();
+      setIsPlaying(false);
+      setCurrentUtterance(null);
+    } else {
+      // Start narration
+      const utterance = new SpeechSynthesisUtterance(sampleStoryText);
+      
+      // Configure voice settings for a warm, storytelling tone
+      utterance.rate = 0.8; // Slightly slower for storytelling
+      utterance.pitch = 1.1; // Slightly higher pitch for warmth
+      utterance.volume = 0.9;
+      
+      // Try to use a female voice if available
+      const voices = window.speechSynthesis.getVoices();
+      const femaleVoice = voices.find(voice => 
+        voice.name.toLowerCase().includes('female') || 
+        voice.name.toLowerCase().includes('woman') ||
+        voice.name.toLowerCase().includes('samantha') ||
+        voice.name.toLowerCase().includes('karen') ||
+        voice.name.toLowerCase().includes('susan')
+      );
+      
+      if (femaleVoice) {
+        utterance.voice = femaleVoice;
+      }
+
+      utterance.onstart = () => {
+        setIsPlaying(true);
+      };
+
+      utterance.onend = () => {
+        setIsPlaying(false);
+        setCurrentUtterance(null);
+      };
+
+      utterance.onerror = () => {
+        setIsPlaying(false);
+        setCurrentUtterance(null);
+        alert('Sorry, there was an error with the narration. Please try again.');
+      };
+
+      setCurrentUtterance(utterance);
+      window.speechSynthesis.speak(utterance);
+    }
+  };
+
+  // Load voices when component mounts
+  React.useEffect(() => {
+    if ('speechSynthesis' in window) {
+      // Load voices
+      window.speechSynthesis.getVoices();
+      
+      // Some browsers need this event to load voices
+      window.speechSynthesis.onvoiceschanged = () => {
+        window.speechSynthesis.getVoices();
+      };
+    }
+
+    // Cleanup on unmount
+    return () => {
+      if (window.speechSynthesis) {
+        window.speechSynthesis.cancel();
+      }
+    };
+  }, []);
   return (
     <>
     <section className={`relative min-h-screen flex items-center overflow-hidden transition-colors ${
@@ -148,13 +225,21 @@ export const Hero: React.FC = () => {
                   The magical trees whispered her name as she discovered..."
                 </p>
                 <div className="flex items-center mt-3 sm:mt-4 space-x-2 sm:space-x-3">
-                  <div className={`w-6 h-6 sm:w-8 sm:h-8 rounded-full flex items-center justify-center ${
-                    isDarkMode ? 'bg-purple-500' : 'bg-purple-400'
-                  }`}>
-                    <span className="text-white text-xs sm:text-sm">▶</span>
-                  </div>
+                  <button 
+                    onClick={handlePlayPause}
+                    className={`w-6 h-6 sm:w-8 sm:h-8 rounded-full flex items-center justify-center transition-all hover:scale-110 ${
+                      isDarkMode ? 'bg-purple-500 hover:bg-purple-600' : 'bg-purple-400 hover:bg-purple-500'
+                    }`}
+                    title={isPlaying ? 'Stop narration' : 'Play story narration'}
+                  >
+                    <span className="text-white text-xs sm:text-sm">
+                      {isPlaying ? '⏸' : '▶'}
+                    </span>
+                  </button>
                   <div className={`flex-1 h-2 rounded-full ${isDarkMode ? 'bg-purple-800' : 'bg-purple-200'}`}>
-                    <div className={`h-2 rounded-full w-1/3 ${isDarkMode ? 'bg-purple-400' : 'bg-purple-500'}`}></div>
+                    <div className={`h-2 rounded-full transition-all duration-300 ${
+                      isPlaying ? 'w-2/3 animate-pulse' : 'w-1/3'
+                    } ${isDarkMode ? 'bg-purple-400' : 'bg-purple-500'}`}></div>
                   </div>
                   <span className={`text-xs sm:text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>Mom's Voice</span>
                 </div>
