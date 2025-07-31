@@ -42,23 +42,36 @@ export const Hero: React.FC = () => {
       // Start narration
       const utterance = new SpeechSynthesisUtterance(sampleStoryText);
       
-      // Configure voice settings for a warm, storytelling tone
-      utterance.rate = 0.8; // Slightly slower for storytelling
-      utterance.pitch = 1.1; // Slightly higher pitch for warmth
+      // Configure voice settings for natural, human-like storytelling with Indian accent
+      utterance.rate = 0.75; // Slower for natural storytelling pace
+      utterance.pitch = 1.0; // Natural pitch
       utterance.volume = 0.9;
       
-      // Try to use a female voice if available
+      // Try to find an Indian accent voice first, then fallback to other warm voices
       const voices = window.speechSynthesis.getVoices();
-      const femaleVoice = voices.find(voice => 
-        voice.name.toLowerCase().includes('female') || 
-        voice.name.toLowerCase().includes('woman') ||
-        voice.name.toLowerCase().includes('samantha') ||
-        voice.name.toLowerCase().includes('karen') ||
-        voice.name.toLowerCase().includes('susan')
+      
+      // Look for Indian English voices first
+      const indianVoice = voices.find(voice => 
+        voice.lang.includes('en-IN') || 
+        voice.name.toLowerCase().includes('indian') ||
+        voice.name.toLowerCase().includes('hindi') ||
+        voice.name.toLowerCase().includes('ravi') ||
+        voice.name.toLowerCase().includes('veena') ||
+        voice.name.toLowerCase().includes('aditi')
       );
       
-      if (femaleVoice) {
-        utterance.voice = femaleVoice;
+      // If no Indian voice found, look for other natural-sounding voices
+      const naturalVoice = !indianVoice && voices.find(voice => 
+        voice.name.toLowerCase().includes('natural') ||
+        voice.name.toLowerCase().includes('neural') ||
+        voice.name.toLowerCase().includes('premium') ||
+        (voice.lang.includes('en') && voice.name.toLowerCase().includes('female'))
+      );
+      
+      if (indianVoice) {
+        utterance.voice = indianVoice;
+      } else if (naturalVoice) {
+        utterance.voice = naturalVoice;
       }
 
       utterance.onstart = () => {
