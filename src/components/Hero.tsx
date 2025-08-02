@@ -9,6 +9,13 @@ export const Hero: React.FC = () => {
   const [showActionModal, setShowActionModal] = React.useState(false);
   const [showWaitlistModal, setShowWaitlistModal] = React.useState(false);
   const [isPlaying, setIsPlaying] = React.useState(false);
+  const [childName, setChildName] = React.useState('Sia');
+  const [favoriteToy, setFavoriteToy] = React.useState('Paw Patrol');
+  const [setting, setSetting] = React.useState('Enchanted forest');
+  const [generatedStory, setGeneratedStory] = React.useState({
+    title: "Sia's Forest Adventure",
+    content: "Once upon a time, little Sia ventured into the enchanted forest with her trusty teddy bear. The magical trees whispered her name as she discovered a hidden path covered in sparkling fairy dust."
+  });
 
   const openActionModal = () => {
     setShowActionModal(true);
@@ -26,7 +33,52 @@ export const Hero: React.FC = () => {
     setShowWaitlistModal(false);
   };
 
-  const sampleStoryText = `Sia's Forest Adventure. Once upon a time, little Sia ventured into the enchanted forest with her trusty teddy bear. The magical trees whispered her name as she discovered a hidden path covered in sparkling fairy dust. As Sia walked deeper into the forest, she met a friendly rabbit who needed help finding his way home. With her brave heart and kind spirit, Sia helped the rabbit navigate through the mystical woods, making a new friend along the way. The forest creatures celebrated their friendship with a beautiful light show from the fireflies, and Sia knew this was just the beginning of many magical adventures to come.`;
+  const settingOptions = [
+    'Enchanted forest',
+    'Underwater kingdom',
+    'Space adventure',
+    'Magical castle',
+    'Dinosaur land'
+  ];
+
+  const generateStory = () => {
+    if (!childName.trim()) {
+      alert('Please enter a child name');
+      return;
+    }
+    
+    const storyTemplates = {
+      'Enchanted forest': {
+        title: `${childName}'s Forest Adventure`,
+        content: `Once upon a time, brave ${childName} ventured into the enchanted forest with their beloved ${favoriteToy}. The magical trees whispered secrets as ${childName} discovered a hidden path filled with wonder and mystery.`
+      },
+      'Underwater kingdom': {
+        title: `${childName} and the Ocean Kingdom`,
+        content: `Deep beneath the sparkling waves, ${childName} dove into an underwater kingdom with their trusty ${favoriteToy}. The colorful coral reefs welcomed ${childName} as they swam alongside friendly dolphins and discovered ancient treasures.`
+      },
+      'Space adventure': {
+        title: `Captain ${childName}'s Space Mission`,
+        content: `Among the twinkling stars, astronaut ${childName} embarked on an incredible space adventure with their companion ${favoriteToy}. Their rocket ship zoomed past colorful planets as ${childName} prepared to meet friendly aliens on a distant world.`
+      },
+      'Magical castle': {
+        title: `${childName} and the Enchanted Castle`,
+        content: `In a land far, far away, ${childName} approached a magnificent castle with their magical ${favoriteToy}. The castle doors opened wide as ${childName} stepped inside to discover rooms filled with floating books and singing portraits.`
+      },
+      'Dinosaur land': {
+        title: `${childName}'s Dinosaur Discovery`,
+        content: `In the prehistoric world of Dinosaur Land, explorer ${childName} walked carefully with their brave ${favoriteToy}. Gentle giants roamed the ancient forests as ${childName} made friends with a playful baby triceratops who needed help finding its family.`
+      }
+    };
+
+    const selectedTemplate = storyTemplates[setting as keyof typeof storyTemplates];
+    setGeneratedStory(selectedTemplate);
+    
+    // Stop any current narration
+    if (isPlaying) {
+      window.speechSynthesis.cancel();
+      setIsPlaying(false);
+    }
+  };
 
   const handlePlayPause = () => {
     if (!('speechSynthesis' in window)) {
@@ -40,7 +92,8 @@ export const Hero: React.FC = () => {
       setIsPlaying(false);
     } else {
       // Start narration
-      const utterance = new SpeechSynthesisUtterance(sampleStoryText);
+      const storyText = `${generatedStory.title}. ${generatedStory.content}`;
+      const utterance = new SpeechSynthesisUtterance(storyText);
       
       // Configure voice settings for natural, human-like storytelling with Indian accent
       utterance.rate = 0.75; // Slower for natural storytelling pace
@@ -204,19 +257,56 @@ export const Hero: React.FC = () => {
                 </div>
                 <div className="space-y-3">
                   <div className={`p-2 sm:p-3 rounded-lg ${isDarkMode ? 'bg-purple-900/50' : 'bg-purple-50'}`}>
-                    <p className={`text-xs sm:text-sm font-medium ${isDarkMode ? 'text-purple-300' : 'text-purple-700'}`}>Child's name: Sia</p>
+                    <label className={`block text-xs font-medium mb-1 ${isDarkMode ? 'text-purple-300' : 'text-purple-700'}`}>Child's name:</label>
+                    <input
+                      type="text"
+                      value={childName}
+                      onChange={(e) => setChildName(e.target.value)}
+                      className={`w-full px-2 py-1 text-xs rounded border ${
+                        isDarkMode 
+                          ? 'bg-gray-800 border-gray-600 text-gray-200' 
+                          : 'bg-white border-gray-300 text-gray-800'
+                      } focus:outline-none focus:ring-1 focus:ring-purple-500`}
+                      placeholder="Enter child's name"
+                    />
                   </div>
                   <div className={`p-2 sm:p-3 rounded-lg ${isDarkMode ? 'bg-pink-900/50' : 'bg-pink-50'}`}>
-                    <p className={`text-xs sm:text-sm font-medium ${isDarkMode ? 'text-pink-300' : 'text-pink-700'}`}>Favorite toy: Paw Patrol</p>
+                    <label className={`block text-xs font-medium mb-1 ${isDarkMode ? 'text-pink-300' : 'text-pink-700'}`}>Favorite toy:</label>
+                    <input
+                      type="text"
+                      value={favoriteToy}
+                      onChange={(e) => setFavoriteToy(e.target.value)}
+                      className={`w-full px-2 py-1 text-xs rounded border ${
+                        isDarkMode 
+                          ? 'bg-gray-800 border-gray-600 text-gray-200' 
+                          : 'bg-white border-gray-300 text-gray-800'
+                      } focus:outline-none focus:ring-1 focus:ring-purple-500`}
+                      placeholder="Enter favorite toy"
+                    />
                   </div>
                   <div className={`p-2 sm:p-3 rounded-lg ${isDarkMode ? 'bg-blue-900/50' : 'bg-blue-50'}`}>
-                    <p className={`text-xs sm:text-sm font-medium ${isDarkMode ? 'text-blue-300' : 'text-blue-700'}`}>Setting: Enchanted forest</p>
+                    <label className={`block text-xs font-medium mb-1 ${isDarkMode ? 'text-blue-300' : 'text-blue-700'}`}>Setting:</label>
+                    <select
+                      value={setting}
+                      onChange={(e) => setSetting(e.target.value)}
+                      className={`w-full px-2 py-1 text-xs rounded border ${
+                        isDarkMode 
+                          ? 'bg-gray-800 border-gray-600 text-gray-200' 
+                          : 'bg-white border-gray-300 text-gray-800'
+                      } focus:outline-none focus:ring-1 focus:ring-purple-500`}
+                    >
+                      {settingOptions.map((option) => (
+                        <option key={option} value={option}>{option}</option>
+                      ))}
+                    </select>
                   </div>
                 </div>
-                <button className={`w-full mt-3 sm:mt-4 text-white py-2 rounded-lg text-xs sm:text-sm font-medium ${
+                <button 
+                  onClick={generateStory}
+                  className={`w-full mt-3 sm:mt-4 text-white py-2 rounded-lg text-xs sm:text-sm font-medium transition-all hover:scale-105 ${
                   isDarkMode 
-                    ? 'bg-gradient-to-r from-purple-500 to-pink-500' 
-                    : 'bg-gradient-to-r from-purple-400 to-pink-400'
+                    ? 'bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600' 
+                    : 'bg-gradient-to-r from-purple-400 to-pink-400 hover:from-purple-500 hover:to-pink-500'
                 }`}>
                   ✨ Generate Story
                 </button>
@@ -228,14 +318,13 @@ export const Hero: React.FC = () => {
                   ? 'bg-gradient-to-br from-yellow-900/30 to-orange-900/30' 
                   : 'bg-gradient-to-br from-yellow-50 to-orange-50'
               }`}>
-                <h3 className={`font-bold mb-2 sm:mb-3 font-serif text-base sm:text-lg ${
+                <h3 className={`font-bold mb-2 sm:mb-3 font-serif text-sm sm:text-base ${
                   isDarkMode ? 'text-gray-100' : 'text-gray-800'
-                }`}>Sia's Forest Adventure</h3>
+                }`}>{generatedStory.title}</h3>
                 <p className={`text-xs sm:text-sm leading-relaxed ${
                   isDarkMode ? 'text-gray-300' : 'text-gray-600'
                 }`}>
-                  "Once upon a time, little Sia ventured into the enchanted forest with her trusty teddy bear. 
-                  The magical trees whispered her name as she discovered..."
+                  "{generatedStory.content}"
                 </p>
                 <div className="flex items-center mt-3 sm:mt-4 space-x-2 sm:space-x-3">
                   <button 
